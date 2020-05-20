@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title></title>
+    <!-- update the version number as needed -->
+    <script defer src="/__/firebase/7.14.4/firebase-app.js"></script>
+    <!-- initialize the SDK after all desired features are loaded -->
+    <script defer src="/__/firebase/init.js"></script>
+    <title>Review sentiment</title>
+    <meta name="description" content="Simple NLP Model with AI platform" />
+    <meta name="keywords" content="Machine Learning, NLP, AI platform" />
+    <meta name="author" content="Daniele Cordano" />
+    <style>
+      body {
+        font-family: "Roboto";
+      }
+      h1 {
+        margin: 50px;
+        font-size: 70px;
+        text-align: center;
+      }
+      #explanation {
+        display: block;
+        margin: auto;
+        margin-bottom: 24px;
+        font-size: 24px;
+        width: 80vw;
+      }
+      #review {
+        display: block;
+        border: 8px solid grey;
+        margin: auto;
+        font-size: 24px;
+        width: 80vw;
+      }
+      .loader {
+        z-index: 1;
+        width: 8vmin;
+        height: 8vmin;
+        border: 1vmin solid white;
+        border-radius: 50%;
+        border-top: 1vmin solid grey;
+        animation: spin 1s linear infinite;
+        display: block;
+        margin: auto;
+        margin-top: 70px;
+      }
+      @keyframes spin {
+        0% {
+          transform: rotate(0deg);
+        }
+        100% {
+          transform: rotate(360deg);
+        }
+      }
+      .hide {
+        display: none;
+      }
+      #evaluate {
+        margin: auto;
+        margin-top: 70px;
+        padding: 30px;
+        text-align: center;
+        font-size: 35px;
+        display: none;
+      }
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@latest"></script>
+  </head>
+  <body>
+    <h1>Review sentiment</h1>
+    <p id="explanation">
+      Write your own book review and have it classified automatically.<br />When
+      you press the evaluate button, your review will be highlighted in red if
+      negative or in green if positive.
+    </p>
+    <input type="text" id="review" placeholder="i.e.: This book is amazing!" />
+    <div id="loader" class="loader"></div>
+    <button id="evaluate">Evaluate</button>
+    <script>
+      const review = document.getElementById("review");
+      const loader = document.getElementById("loader");
+      const evaluate = document.getElementById("evaluate");
+
+      evaluate.addEventListener("click", function () {
+        predict(review.value);
+      });
+      review.addEventListener("input", function () {
+        review.style.borderColor = "grey";
+      });
+
+      function predict(input) {
+        predicted = False;
+        if (predicted) review.style.borderColor = "green";
+        else review.style.borderColor = "red";
+      }
+    </script>
+  </body>
+</html>

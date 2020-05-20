@@ -1,0 +1,14 @@
+cd 'C:\projects\google ai platform demo\'
+.\venv\Scripts\activate
+$env:GOOGLE_APPLICATION_CREDENTIALS="C:\projects\google ai platform demo\Google AI platform demo-1a801c7512f0.json"
+py .\client.py
+$env:REGION="europe-west1"
+$env:BUCKET_NAME="amazon-reviews-sentiment"
+gsutil mb -l $env:REGION gs://$env:BUCKET_NAME
+gsutil cp ./dist/my_custom_code-0.1.tar.gz gs://$env:BUCKET_NAME/custom_prediction_routine_tutorial/my_custom_code-0.1.tar.gz
+gsutil cp amazon_reviews_sentiment.h5 preprocessor.pkl gs://$env:BUCKET_NAME/custom_prediction_routine_tutorial/model/
+$env:MODEL_NAME="BookReviewsSentiment"
+$env:VERSION_NAME="v1"
+gcloud ai-platform models create $env:MODEL_NAME --regions $env:REGION
+gcloud beta ai-platform versions delete $env:VERSION_NAME --model $env:MODEL_NAME
+gcloud beta ai-platform versions create $env:VERSION_NAME --model $env:MODEL_NAME --runtime-version 1.15 --python-version 3.7 --origin gs://$env:BUCKET_NAME/custom_prediction_routine_tutorial/model/ --package-uris gs://$env:BUCKET_NAME/custom_prediction_routine_tutorial/my_custom_code-0.1.tar.gz --prediction-class predictor.MyPredictor

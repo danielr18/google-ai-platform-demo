@@ -1,0 +1,6 @@
+node_modules/
+dist/
+amazon_reviews_sentiment.h5
+cmd.txt
+powershell.txt
+preprocessor.pkl
