@@ -1,6 +1,6 @@
 cd 'C:\projects\google ai platform demo\'
 .\venv\Scripts\activate
-$env:GOOGLE_APPLICATION_CREDENTIALS="C:\projects\google ai platform demo\Google AI platform demo-1a801c7512f0.json"
+$env:GOOGLE_APPLICATION_CREDENTIALS="C:\projects\google-ai-platform-demo\Google AI platform demo-1a801c7512f0.json"
 py .\client.py
 $env:REGION="europe-west1"
 $env:BUCKET_NAME="amazon-reviews-sentiment"

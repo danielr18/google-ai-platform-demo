@@ -7,7 +7,7 @@ gsutil cp amazon_reviews_sentiment.h5 preprocessor.pkl gs://%BUCKET_NAME%/custom
 set MODEL_NAME=BookReviewsSentiment
 set VERSION_NAME=v1
 set REGION=europe-west1
-set GOOGLE_APPLICATION_CREDENTIALS=C:/projects/google ai platform demo/Google AI platform demo-1a801c7512f0.json
+set GOOGLE_APPLICATION_CREDENTIALS=C:/projects/google-ai-platform-demo/Google AI platform demo-1a801c7512f0.json
 gcloud beta ai-platform versions delete %VERSION_NAME% --model %MODEL_NAME%
 gcloud beta ai-platform versions create %VERSION_NAME% --model %MODEL_NAME% --runtime-version 1.15 --python-version 3.7 --origin gs://%BUCKET_NAME%/custom_prediction_routine_tutorial/model/ --package-uris gs://%BUCKET_NAME%/custom_prediction_routine_tutorial/my_custom_code-0.1.tar.gz --prediction-class predictor.MyPredictor
 py client.py

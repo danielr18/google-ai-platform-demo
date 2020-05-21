@@ -1,29 +1,45 @@
 const functions = require("firebase-functions");
-const admin = require("firebase-admin");
-// admin.initializeApp(functions.config().firebase);
-const serviceAccount = require("./ai-platform-demo-7e3b1-firebase-adminsdk-o7da8-e1cc740609.json");
-admin.initializeApp({
-  credential: admin.credential.cert(serviceAccount),
-  databaseURL: "https://ai-platform-demo-7e3b1.firebaseio.com",
-});
-const googleapis = require("googleapis");
-const ml = googleapis.google.ml("v1");
+var admin = require("firebase-admin");
+admin.initializeApp();
+const { google } = require("googleapis");
+const ml = google.ml("v1");
 
 exports.getPrediction = functions
   .region("europe-west1")
-  .https.onRequest(async (request, response) => {
-    const review = request.body.review;
-    const instance = [review];
-    const model = "BookReviewsSentiment";
-    const projectId = "ai-platform-demo-7e3b1";
-    // const { credential } = await googleapis.google.auth.getApplicationDefault();
-    const modelName = `projects/${projectId}/models/${model}`;
-    const preds = await ml.projects.predict({
-      auth: credential,
-      name: modelName,
-      requestBody: {
-        instance,
-      },
+  .https.onRequest((req, res) => {
+    google.auth.getApplicationDefault((err, authClient, projectId) => {
+      res.header("Content-Type", "application/json");
+      res.header("Access-Control-Allow-Origin", "*");
+      res.header("Access-Control-Allow-Headers", "Content-Type");
+
+      //respond to CORS preflight requests
+      if (req.method === "OPTIONS") {
+        res.status(204).send("");
+        return;
+      }
+
+      if (err) {
+        console.log("Authentication failed because of ", err);
+        res.status(401).send("Authentication failed");
+      } else {
+        // create the full model name which includes the project ID
+        const model = "BookReviewsSentiment";
+        const modelName = "projects/" + projectId + "/models/" + model;
+
+        const mleRequestJson = {
+          auth: authClient,
+          name: modelName,
+          resource: { instances: req.body.instances },
+        };
+
+        ml.projects.predict(mleRequestJson, (err, result) => {
+          if (err) {
+            console.log(err);
+            res.status(400).send("Something broke, does that model exist?");
+          } else {
+            res.status(200).send(result.data["predictions"]);
+          }
+        });
+      }
     });
-    response.send(preds.data["predictions"][0]);
   });
