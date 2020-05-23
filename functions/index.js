@@ -1,5 +1,5 @@
 const functions = require("firebase-functions");
-var admin = require("firebase-admin");
+const admin = require("firebase-admin");
 admin.initializeApp();
 const { google } = require("googleapis");
 const ml = google.ml("v1");
@@ -29,7 +29,7 @@ exports.getPrediction = functions
         const mleRequestJson = {
           auth: authClient,
           name: modelName,
-          resource: { instances: req.body.instances },
+          resource: { instances: req.body.reviews },
         };
 
         ml.projects.predict(mleRequestJson, (err, result) => {
