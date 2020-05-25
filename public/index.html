@@ -64,7 +64,7 @@
         padding: 30px;
         text-align: center;
         font-size: 35px;
-        display: none;
+        display: block;
       }
     </style>
     <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@latest"></script>
@@ -91,21 +91,30 @@
         review.style.borderColor = "grey";
       });
 
-      function predict(input) {
+      async function predict(input) {
         loader.classList.remove("hide");
         evaluate.style.display = "none";
-        FUNCTION_URL = 'https://europe-west1-ai-platform-demo-7e3b1.cloudfunctions.net/getPrediction'
-        const response = await fetch(FUNCTION_URL, {
-          method: 'POST',
-          headers: {
-            'Accept': 'application/json',
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify({instances: [input]})
-        });
-        const predicted = await response.json()[0];
-        if (predicted) review.style.borderColor = "green";
-        else review.style.borderColor = "red";
+        FUNCTION_URL =
+          "https://europe-west1-ai-platform-demo-7e3b1.cloudfunctions.net/getPrediction";
+        try {
+          const response = await fetch(FUNCTION_URL, {
+            method: "POST",
+            headers: {
+              Accept: "application/json",
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ instances: [input] }),
+          });
+          if (response.ok) {
+            const predicted = await response.json();
+            if (predicted[0]) review.style.borderColor = "green";
+            else review.style.borderColor = "red";
+          } else {
+            throw Error(response.status);
+          }
+        } catch (err) {
+          console.log(err);
+        }
         loader.classList.add("hide");
         evaluate.style.display = "block";
       }

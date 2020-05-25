@@ -6,40 +6,35 @@ const ml = google.ml("v1");
 
 exports.getPrediction = functions
   .region("europe-west1")
-  .https.onRequest((req, res) => {
-    google.auth.getApplicationDefault((err, authClient, projectId) => {
-      res.header("Content-Type", "application/json");
-      res.header("Access-Control-Allow-Origin", "*");
-      res.header("Access-Control-Allow-Headers", "Content-Type");
+  .https.onRequest(async (req, res) => {
+    res.set("Accept", "application/json");
+    res.set("Content-Type", "application/json");
+    res.set("Access-Control-Allow-Origin", "*");
+    res.set("Access-Control-Allow-Headers", "*");
+    res.set("Access-Control-Allow-Credentials", "true");
+    const adc = await google.auth.getApplicationDefault();
 
-      //respond to CORS preflight requests
-      if (req.method === "OPTIONS") {
-        res.status(204).send("");
-        return;
-      }
+    //respond to CORS preflight requests
+    if (req.method === "OPTIONS") {
+      res.status(204).send("");
+      return;
+    }
+    // create the full model name which includes the project ID
+    const model = "BookReviewsSentiment";
+    const modelName = "projects/" + adc.projectId + "/models/" + model;
 
+    const mleRequestJson = {
+      auth: adc.credential,
+      name: modelName,
+      resource: { instances: req.body.instances },
+    };
+
+    ml.projects.predict(mleRequestJson, (err, result) => {
       if (err) {
-        console.log("Authentication failed because of ", err);
-        res.status(401).send("Authentication failed");
+        console.log(err);
+        res.status(400).send("400: ", error.status);
       } else {
-        // create the full model name which includes the project ID
-        const model = "BookReviewsSentiment";
-        const modelName = "projects/" + projectId + "/models/" + model;
-
-        const mleRequestJson = {
-          auth: authClient,
-          name: modelName,
-          resource: { instances: req.body.reviews },
-        };
-
-        ml.projects.predict(mleRequestJson, (err, result) => {
-          if (err) {
-            console.log(err);
-            res.status(400).send("Something broke, does that model exist?");
-          } else {
-            res.status(200).send(result.data["predictions"]);
-          }
-        });
+        res.status(200).send(result.data["predictions"]);
       }
     });
   });
