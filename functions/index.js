@@ -1,6 +1,6 @@
 const functions = require("firebase-functions");
 const admin = require("firebase-admin");
-admin.initializeApp();
+admin.initializeApp(functions.config().firebase);
 const { google } = require("googleapis");
 const ml = google.ml("v1");
 
