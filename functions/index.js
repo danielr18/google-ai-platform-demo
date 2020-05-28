@@ -19,25 +19,5 @@ exports.getPrediction = functions
     }
   
     res.header("Content-Type", "application/json");
-  
-    const adc = await google.auth.getApplicationDefault();
-
-    // create the full model name which includes the project ID
-    const model = "BookReviewsSentiment";
-    const modelName = "projects/" + adc.projectId + "/models/" + model;
-
-    const mleRequestJson = {
-      auth: adc.credential,
-      name: modelName,
-      resource: { instances: req.body.instances },
-    };
-
-    ml.projects.predict(mleRequestJson, (err, result) => {
-      if (err) {
-        console.log(err);
-        res.status(400).send("400: ", error.status);
-      } else {
-        res.status(200).send(result.data["predictions"]);
-      }
-    });
+    res.status(200).send("{}");
   });
